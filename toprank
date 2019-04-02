@@ -1,0 +1,86 @@
+#!/usr/bin/php
+<?php
+
+// include the common PHP code file
+require("a2.php");
+
+// PROGRAM BODY BEGINS
+
+$usage = "Usage: $argv[0] K StartYear EndYear
+$argv[0] K StartYear EndYear";
+$db = dbConnect(DB_CONNECTION);
+
+// Check arguments
+if (count($argv) != 4 && count($argv) != 5 ) exit("$usage\n");
+
+function add_equal($s){
+  // for adding quote at the string 
+  return "'".$s."'";
+}
+
+// init a empty vars 
+$genres_sql = "";
+$q = "";
+
+// process the generic 
+array_shift($argv);
+if ($argc == 5){
+  // process the genere query to the where query 
+  $genres = array_shift($argv);
+  $genres_arr = explode("&", $genres);
+  $genres_arr = array_map("add_equal", $genres_arr);
+  $genres_sql = join(",",$genres_arr); 
+  // Create the temporary view for matching 
+  $q = ' 
+  with g_movie as (
+    select movie_id, count(*)
+    from genre as g where g.genre in ('.$genres_sql.') group by movie_id 
+  )
+  ';
+  // this will pass as filter of genres 
+  $genres_sql = "join g_movie as g on m.id = g.movie_id 
+  and g.count=". sizeof($genres_arr);
+}
+
+
+$limit = array_shift($argv);
+$start_year = array_shift($argv);
+$end_year = array_shift($argv);
+
+$arr= [$start_year, $end_year, $limit];
+// dd($arr);
+
+// Get the return results
+// $val = "%".$argv[1]."%";
+$q .= "
+select distinct
+m.title, m.year, m.content_rating, m.lang,
+r.imdb_score, r.num_voted_users
+from movie as m 
+join rating as r on r.movie_id = m.id "
+.$genres_sql." where m.year >=".$start_year." 
+and m.year<=".$end_year."
+order by r.imdb_score desc, r.num_voted_users desc
+limit ".$limit.";
+";
+// dd($q);
+
+
+// dd( mkSQL($q, $arr));
+$r = dbQuery($db, $q);
+
+// Iterate through the results and print
+$i = 1;
+while ($t = dbNext($r)) {
+  echo "$i. $t[0] (";
+  noEmptyEcho($t[1],", ");
+  noEmptyEcho($t[2],", ");
+  noEmptyEcho($t[3]);
+  echo ") [";
+  noEmptyEcho($t[4],", ");
+  noEmptyEcho($t[5]);
+  echo "]\n";
+  $i++;
+}
+
+?>

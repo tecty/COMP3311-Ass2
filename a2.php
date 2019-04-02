@@ -22,7 +22,17 @@ function noEmptyEcho($value, $end=""){
     }
 }
 
+function dd($var){
+    // handy function from laravel 
+    var_dump ($var);
+    exit();
+}
 
-
+function ifExistReturn($val, $str= ""){
+    if (!empty($val)){
+        return $str;
+    }
+    return "";
+}  
 
 ?>
