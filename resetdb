@@ -1,0 +1,7 @@
+#!/bin/bash 
+echo 'drop database mydb; create database mydb;'| psql 'host=localhost user=postgres password=apple123' 
+
+echo "apply schema"
+./connect -f a2.db > /dev/null
+
+
