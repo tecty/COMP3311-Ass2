@@ -3,5 +3,6 @@ echo 'drop database mydb; create database mydb;'| psql 'host=localhost user=post
 
 echo "apply schema"
 ./connect -f a2.db > /dev/null
-
+echo "apply updates"
+./connect -f updates.sql > /dev/null
 

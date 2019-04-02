@@ -16,6 +16,12 @@ define("DB_CONNECTION","dbname=mydb host=localhost user=postgres password=apple1
 // E.g., common constants, functions, etc.
 //
 
+function noEmptyEcho($value, $end=""){
+    if(!empty($value)){
+        echo $value.$end;
+    }
+}
+
 
 
 

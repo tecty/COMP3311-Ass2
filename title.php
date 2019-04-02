@@ -1,14 +1,8 @@
 #!/usr/bin/php
 <?php
 
-//
-// pg - print all PG and PG-13 movies of a given year
-//
-
 // include the common PHP code file
 require("a2.php");
-
-
 
 // PROGRAM BODY BEGINS
 
@@ -19,19 +13,16 @@ $db = dbConnect(DB_CONNECTION);
 if (count($argv) < 2) exit("$usage\n");
 
 // Get the return results
-$val = $argv[1];
-$q = "select title, content_rating, lang, duration from movie where year = %d and content_rating in ('PG','PG-13') order by title";
+$val = "%".$argv[1]."%";
+$q = "
+select * from movie where lower(title) like %s order by year;
+";
 $r = dbQuery($db, mkSQL($q, $val));
 
 // Iterate through the results and print
 $i = 1;
 while ($t = dbNext($r)) {
-  echo "$i. $t[0] ($t[1]";
-  if (!empty($t[2]))
-    echo ", $t[2]";
-  if (!empty($t[3]))
-      echo ", $t[3]";
-  echo ")\n";
+  echo "$i. $t[0] -- $t[1] ($t[2], $t[3], $t[4])\n";
   $i++;
 }
 
