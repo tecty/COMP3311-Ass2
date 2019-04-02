@@ -1,0 +1,44 @@
+#!/usr/bin/php
+<?php
+
+// include the common PHP code file
+require("a2.php");
+
+// PROGRAM BODY BEGINS
+
+$usage = "Usage: $argv[0] Actor";
+$db = dbConnect(DB_CONNECTION);
+
+// Check arguments
+if (count($argv) < 2) exit("$usage\n");
+
+// Get the return results
+$val = "%".$argv[1]."%";
+$q = "
+select m.title, m.year, m.content_rating, r.imdb_score, namelist(g.genre)
+from movie as m
+join rating as r 
+    on r.movie_id = m.id
+join genre as g 
+    on g.movie_id= m.id
+where lower(title) like %s 
+group by m.title, m.year, m.content_rating, r.imdb_score
+order by m.year
+;
+";
+$r = dbQuery($db, mkSQL($q, $val));
+
+// Iterate through the results and print
+$i = 1;
+while ($t = dbNext($r)) {
+  echo "$i. $t[0] (";
+  noEmptyEcho($t[1],", ");
+  noEmptyEcho($t[2],", ");
+  noEmptyEcho($t[3]);
+  echo ") [";
+  noEmptyEcho($t[4],"");
+  echo "]\n";
+  $i++;
+}
+
+?>
