@@ -100,4 +100,17 @@ function get_combinations($tree, $x){
 
 }
 
+
+function get_id_by_name($name){
+    global $db; 
+    $sql= "select id from actor where lower(name)=lower('".$name."');";
+    $t = dbNext(dbQuery($db, $sql));   
+    if ($t){
+        return $t[0];
+    }
+    else {
+        return null;
+    }
+}
+
 ?>

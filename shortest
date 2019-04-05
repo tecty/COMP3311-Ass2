@@ -10,14 +10,23 @@ $usage = "Usage: $argv[0] sourceActor destActor";
 $db = dbConnect(DB_CONNECTION);
 
 // Check arguments
-// if (count($argv) != 3 ) exit("$usage\n");
+if (count($argv) != 3 ) exit("$usage\n");
 
 // dd(mkSQL($q, $argv[1]));
 // query the first result
 // $title = $argv[1];
 
-$src  = $argv[1];
-$dest = $argv[2];
+$src  = (int) get_id_by_name($argv[1]);
+$dest = (int) get_id_by_name($argv[2]);
+
+if (!$src || !$dest){
+  exit("Given name is not exist in db");
+}
+
+/**
+ * Get the graph
+ */
+
 // initial the edges array
 $edges  = array();
 
@@ -41,9 +50,6 @@ $end_depth = 6;
 // successful path to the dest 
 $success_path_arr = array();
 
-// this will be delete, only for testing
-$src = (int) $src;
-$dest = (int) $dest;
 
 
 // init the 
@@ -122,15 +128,23 @@ foreach ($success_path_arr as $success_path) {
   }
 }
 
+/**
+ * Formatting the output
+ */
+
+// map the array to the to strings  
+function join_movie_path($mp){
+  return join($mp, "; ");
+}
+$movie_path = array_map("join_movie_path", $movie_path);
+// sort it 
+sort($movie_path);
+
 
 $i =1;
 foreach ($movie_path as $mp) {
-  echo "$i. ".join($mp, "; ")."\n";
+  echo "$i. ".$mp."\n";
   $i++;
 }
-
-
-
-
 
 ?>
