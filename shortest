@@ -34,46 +34,67 @@ while ($t = dbNext($r)){
  */
 
 $seen = array();
-// path is array of array(path obj?)
-$path = array();
+// searching path is array of array(actor_id)
+$searching = array();
+// the end depth is given by specification 
+$end_depth = 6;
+// successful path to the dest 
+$success_path = array();
 
 // this will be delete, only for testing
 $src = (int) $src;
 $dest = (int) $dest;
 
-array_push($path, array($src));
 
-// the end depth is given by specification 
-$end_depth = 6;
+// init the 
+array_push($searching, array($src));
 
+
+
+// depth 1 example 1598 - 2591
+// depth 2 example 1598 - 3926
 while(
-  ($next = array_shift($path)) &&
+  ($next = array_shift($searching)) &&
   sizeof($next) < $end_depth
 ){
   foreach ($edges[array_last($next)] as $neighbour => $value) {
     // we only use the keys in the array 
     // the key is the neighbour for the last node in next 
-    if (empty($seen[$neighbour])) {
+    if (
+      empty($seen[$neighbour]) || 
+      // two path can be also the shortest path to this neighbour 
+      $seen[$neighbour] == sizeof($next) + 1
+    ) {
       // not seen
       // push a new route to search 
 
       // copy the whole array by assign 
       $new_path = $next; 
       array_push($new_path, $neighbour);
-      
-      array_push($path, $new_path);
-    } else {
-      // seen, dump this node 
-    }
-    
-    if($neighbour == $dest){
-      // stop the path search earlier 
-      $end_depth(sizeof($next) + 1);
-    }
+      // new path to search 
+      array_push($searching, $new_path);
+      // add this node as seen 
 
+      // this the degree 
+      $seen[$neighbour] = sizeof($new_path); 
+
+      if($neighbour == $dest){
+        // stop the path search earlier 
+        $end_depth=sizeof($new_path) ;
+        // push this path to be success ful path to dest 
+        array_push($success_path, $new_path);
+      }
+    }
   }
-  dd($path);    
 }
+
+/**
+ * Translate the actor path to movie name's path
+ */
+$movie_path = array();
+get_movie_path([1598,1631]);
+get_movie_path([1598,1631]);
+dd(get_movie_path([1598,1631]));
 
 
 

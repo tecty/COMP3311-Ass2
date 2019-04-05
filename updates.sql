@@ -65,27 +65,49 @@ on
 ;
 
 
-create recursive view rec_actor_path  
-	(root_id, src_id, movie_id, dest_id, depth)
-as
-(
-    select src_id, src_id, movie_id, dest_id, 1 
-    from actor_path 
 
-	union all
+create type movie_path as 
+	(src text, movie text, y int , dest text);
+
+create or replace function actor_path_to_strings
+	(_src int, _dest int) returns movie_path 
+as $$ 
+	select a1.name, m.title , m.year, a2.name 
+	from actor_path as ap 
+	join actor as a1 
+		on a1.id=ap.src_id 
+	join actor as a2
+		on a2.id = ap.dest_id 
+	join movie as m 
+		on m.id = movie_id
+	where ap.src_id = $1 and ap.dest_id = $2;
+	;
+
+$$ language sql;
+
+
+
+-- create recursive view rec_actor_path  
+-- 	(root_id, src_id, movie_id, dest_id, depth)
+-- as
+-- (
+--     select src_id, src_id, movie_id, dest_id, 1 
+--     from actor_path 
+
+-- 	union all
 	  
-	select 
-		rec.root_id, a.src_id, a.movie_id, a.dest_id, rec.depth+1
-	from rec_actor_path as rec 
-	join 
-		actor_path as a on a.src_id = rec.dest_id and
-		rec.dest_id <> rec.root_id 
-	where rec.depth <=5
-);
+-- 	select 
+-- 		rec.root_id, a.src_id, a.movie_id, a.dest_id, rec.depth+1
+-- 	from rec_actor_path as rec 
+-- 	join 
+-- 		actor_path as a on a.src_id = rec.dest_id and
+-- 		rec.dest_id <> rec.root_id 
+-- 	where rec.depth <=5
+-- );
 
 
-create type act_rec as 
-	(src_id int, movie_id int, dest_id int);
+-- create type act_rec as 
+-- 	(src_id int, movie_id int, dest_id int);
 
 -- create or replace function rec_find(_prev int, _dest int, _depth int) as $$
 -- declare 

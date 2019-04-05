@@ -40,4 +40,41 @@ function array_last($array){
     return $array[sizeof($array) -1];
 }
 
+$movie_path_cache= array();
+
+function get_movie_path($array){
+    /**
+     * $array is a length two array as  [$src, $dest]
+     */
+    
+    // get the connection 
+    global $db, $movie_path_cache;
+
+    if(!empty($movie_path_cache[$array[0]][$array[1]])){
+        // dd("cache hit");
+        // cache is not empty, we don't need to fire up a sql 
+        return $movie_path_cache[$array[0]][$array[1]];
+    }
+
+    $sql= "select * from actor_path_to_strings(".$array[0].",".$array[1].");";
+    $r = dbQuery($db, $sql);
+    // res to return 
+    $res = array();
+
+    while ($t =dbNext($r)){
+        array_push($res,
+        $t[0]." was in ".$t[1]." ".
+        ifExistReturn($t[2],"(".$t[2].")").
+        " with ".$t[3]);
+    }
+
+    // store a copy in cache 
+    $movie_path_cache[$array[0]][$array[1]] = $res;
+
+    // return the result 
+    return $res;
+    
+
+}
+
 ?>
