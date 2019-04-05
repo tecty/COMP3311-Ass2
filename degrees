@@ -1,0 +1,134 @@
+#!/usr/bin/php
+<?php
+
+// include the common PHP code file
+require("a2.php");
+
+// PROGRAM BODY BEGINS
+
+$usage = "Usage: $argv[0] sourceActor startDepth endDepth";
+$db = dbConnect(DB_CONNECTION);
+
+// Check arguments
+if (count($argv) != 4 ) exit("$usage\n");
+
+/**
+ * Arguement processing 
+ */
+$src  = (int) get_id_by_name($argv[1]);
+// depth info 
+$start_depth = (int)$argv[2];
+$end_depth = (int)$argv[3];
+
+if (!$src ){
+  exit("Given name is not exist in db");
+}
+if ($end_depth < $start_depth ){
+  exit("startDepth must be smaller than endDepth");
+}
+
+/**
+ * Get the id to name mapping 
+ */
+$actor_id_to_name= array();
+
+$q ="select id, name from actor; ";
+$r = dbQuery($db, $q);
+while ($t = dbNext($r)){
+  // 2-d array with index is int 
+  $actor_id_to_name[(int)$t[0]] = $t[1];
+}
+
+
+/**
+ * Get the graph
+ */
+
+// initial the edges array
+$edges  = array();
+
+$q ="select distinct src_id, dest_id from actor_path ;";
+$r = dbQuery($db, $q);
+while ($t = dbNext($r)){
+  // 2-d array with index is int 
+  $edges[(int)$t[0]][(int)$t[1]] = true;
+}
+
+
+/**
+ * Use BFS to search the path to dest spcified 
+ */
+
+$seen = array();
+// searching path is array of array(actor_id)
+$searching = array();
+
+// init the 
+array_push($searching, array($src));
+
+// depth 1 example 1598 - 2591
+// depth 2 example 1598 - 3926
+// multiple path example 
+// 539 - 66
+while(
+  ($next = array_shift($searching)) &&
+  sizeof($next) <= $end_depth
+){
+  foreach ($edges[array_last($next)] as $neighbour => $value) {
+    // we only use the keys in the array 
+    // the key is the neighbour for the last node in next 
+    if (
+      empty($seen[$neighbour]) || 
+      // two path can be also the shortest path to this neighbour 
+      $seen[$neighbour] == sizeof($next) + 1
+    ) {
+      // not seen
+      // push a new route to search 
+
+      // copy the whole array by assign 
+      $new_path = $next; 
+      array_push($new_path, $neighbour);
+      // new path to search 
+      array_push($searching, $new_path);
+      // add this node as seen 
+
+      // this the degree 
+      $seen[$neighbour] = sizeof($new_path); 
+
+    }
+  }
+}
+
+$seen[$src] = null;
+
+/**
+ * Translate the seen to degree => array(name)
+ */
+// initial the array 
+$degree_seen = array();
+for ($i=1; $i <= $end_depth; $i++) { 
+  $degree_seen[$i]= array();
+}
+// dd($seen);
+
+foreach ($seen as $actor_id => $degree) {
+  array_push($degree_seen[$degree-1], $actor_id_to_name[$actor_id]);
+}
+
+/**
+ * Formatting the output
+ */
+
+$i =1;
+for ($depth=$start_depth; $depth <= $end_depth; $depth++) { 
+  sort($degree_seen[$depth]);
+  foreach ($degree_seen[$depth] as $name) {
+    echo "$i. $name ($depth)\n";
+    $i++;
+  }
+}
+
+
+
+
+?>
