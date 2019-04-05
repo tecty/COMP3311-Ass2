@@ -1,0 +1,59 @@
+#!/usr/bin/php
+<?php
+
+// include the common PHP code file
+require("a2.php");
+
+// PROGRAM BODY BEGINS
+
+$usage = "Usage: $argv[0] sourceActor destActor";
+$db = dbConnect(DB_CONNECTION);
+
+// Check arguments
+// if (count($argv) != 3 ) exit("$usage\n");
+
+// dd(mkSQL($q, $argv[1]));
+// query the first result
+// $title = $argv[1];
+
+$src  = $argv[1];
+$dest = $argv[2];
+
+$path = array();
+
+
+$q ="select distinct src_id, dest_id from actor_path ;";
+$r = dbQuery($db, $q);
+$i =1 ;
+while ($t = dbNext($r)){
+  echo "$i. $t[0] - $t[1]\n";
+  $path[$t[0]][$t[1]] = true;
+  $i++;
+}
+
+  if (!empty($path[$t[0]][$t[1]])){
+    echo "true";
+  }
+  else{
+    echo "false";
+  }
+
+// dd( mkSQL($q, $arr));
+
+// Iterate through the results and print
+// $i = 1;
+// while ($t = dbNext($r)) {
+//   echo "$i. $t[0]";
+//   // if (!empty($t[1])){
+//   //   echo " (".$t[1].")";
+//   // }
+//   // echo " [";
+//   // noEmptyEcho($t[2],", ");
+//   // noEmptyEcho($t[3],", ");
+//   // noEmptyEcho($t[4],", ");
+//   // noEmptyEcho($t[5]);
+//   echo "\n";
+//   $i++;
+// }
+
+?>

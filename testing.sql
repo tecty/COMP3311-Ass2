@@ -31,55 +31,55 @@
 -- where lower(m.title)=lower('Happy Feet');
 
 
-with g_movie as (
-  select m.id, m.title, count(g2.*) as g_count from movie as m 
-  left join genre as g2 
-  on 
-    g2.movie_id = m.id  and 
-    g2.genre in 
-    (select g.genre from genre as g 
-    join movie as m 
-    on 
-      lower(m.title)=lower('Happy Feet') and
-        m.id = g.movie_id
-    )
-  group by m.id, m.title
-)
+-- with g_movie as (
+--   select m.id, m.title, count(g2.*) as g_count from movie as m 
+--   left join genre as g2 
+--   on 
+--     g2.movie_id = m.id  and 
+--     g2.genre in 
+--     (select g.genre from genre as g 
+--     join movie as m 
+--     on 
+--       lower(m.title)=lower('Happy Feet') and
+--         m.id = g.movie_id
+--     )
+--   group by m.id, m.title
+-- )
 
-, k_movie as 
-(
-  select m.id, m.title, count(k2.*) as k_count from movie as m 
-  left join keyword as k2 
-  on 
-    k2.movie_id = m.id  and 
-    k2.keyword in 
-    (select k.keyword from keyword as k 
-    join movie as m 
-    on 
-      lower(m.title)=lower('Happy Feet') and
-        m.id = k.movie_id
-    )
-  group by m.id, m.title
-)
+-- , k_movie as 
+-- (
+--   select m.id, m.title, count(k2.*) as k_count from movie as m 
+--   left join keyword as k2 
+--   on 
+--     k2.movie_id = m.id  and 
+--     k2.keyword in 
+--     (select k.keyword from keyword as k 
+--     join movie as m 
+--     on 
+--       lower(m.title)=lower('Happy Feet') and
+--         m.id = k.movie_id
+--     )
+--   group by m.id, m.title
+-- )
 
-select 
-  m.title, m.year, g.g_count, k.k_count, r.imdb_score, r.num_voted_users
-from movie  as m 
--- similarity
-join k_movie as k 
-on k.id = m.id
-join g_movie as g 
-on g.id = m.id 
--- imdb rank and vote 
-join rating as r
-on r.movie_id = m.id 
-where lower(m.title)<>lower('Happy Feet') 
-order by 
-  g.g_count desc,
-  k.k_count desc,
-  r.imdb_score desc,
-  r.num_voted_users desc
-;
+-- select 
+--   m.title, m.year, g.g_count, k.k_count, r.imdb_score, r.num_voted_users
+-- from movie  as m 
+-- -- similarity
+-- join k_movie as k 
+-- on k.id = m.id
+-- join g_movie as g 
+-- on g.id = m.id 
+-- -- imdb rank and vote 
+-- join rating as r
+-- on r.movie_id = m.id 
+-- where lower(m.title)<>lower('Happy Feet') 
+-- order by 
+--   g.g_count desc,
+--   k.k_count desc,
+--   r.imdb_score desc,
+--   r.num_voted_users desc
+-- ;
 
 -- select m.id, m.title, count(g2.*) as g_count from movie as m 
 -- left join genre as g2 
@@ -93,4 +93,27 @@ order by
 --       m.id = g.movie_id
 --   )
 -- group by m.id, m.title
+-- ;
+
+
+-- tom cruise has actor id: 539
+
+-- with rec_actor_path 
+-- 	(root_id, src_id, movie_id, dest_id, depth)
+-- as (
+--   (
+--     select src_id, src_id, movie_id, dest_id, 1 
+--     from actor_path 
+--   ) 
+--   union  ( 
+--     select 
+--       rec.root_id, a.src_id, a.movie_id, a.dest_id, a.depth+1
+--     from rec_actor_path as rec 
+--     join 
+--       actor_path as a on a.src_id = rec.dest_id 	
+--     where rec.depth <=5
+--   )
+-- )
+-- select * from rec_actor_path as r
+-- where r.root_id = 1000 and r.dest_id = 100 and r.depth <3
 -- ;

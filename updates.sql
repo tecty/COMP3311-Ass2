@@ -49,5 +49,112 @@ create aggregate namelist(text)(
 	finalfunc  = removefirst
 );
 
+
+create view actor_path 
+	(src_id,movie_id,dest_id)
+as 
+select 
+	a1.actor_id , 
+	a1.movie_id ,
+	a2.actor_id  
+from acting as a1 
+join acting as a2 
+on 
+	a1.movie_id = a2.movie_id and
+	a2.actor_id <> a1.actor_id
+;
+
+
+create recursive view rec_actor_path  
+	(root_id, src_id, movie_id, dest_id, depth)
+as
+(
+    select src_id, src_id, movie_id, dest_id, 1 
+    from actor_path 
+
+	union all
+	  
+	select 
+		rec.root_id, a.src_id, a.movie_id, a.dest_id, rec.depth+1
+	from rec_actor_path as rec 
+	join 
+		actor_path as a on a.src_id = rec.dest_id and
+		rec.dest_id <> rec.root_id 
+	where rec.depth <=5
+);
+
+
+create type act_rec as 
+	(src_id int, movie_id int, dest_id int);
+
+-- create or replace function rec_find(_prev int, _dest int, _depth int) as $$
+-- declare 
+-- 	_path act_rec;
+-- begin
+-- 	for _path in
+-- 		select * from actor_path where src_id = _prev 
+
+-- end;
+-- $$ language plpgsql;
+	
+	
+	
+-- create type path_rec as
+-- 	(actor_1 int, actor_2 int,actor_3 int,actor_4 int, actor_5 int,actor_6 int);
+
+
+-- create or replace function find_path(_src int, _dest int) returns setof path_rec
+-- as $$ 
+-- declare 
+-- 	_path path_rec[];
+-- 	_this_con act_rec;
+-- 	_seen_actor int[]; 
+-- 	_not_visit int[];
+-- 	_not_visit_index int:= 0;
+-- 	_end_flag bool:= false;
+-- 	_next int:= 0; 
+-- 	-- recursion counter
+-- 	_rec_count int := 0;
+-- 	-- _degree_flag int:= 0;
+-- begin 
+-- 	-- add the source to be visit 
+-- 	_not_visit := _not_visit || _src;
+-- 	loop
+-- 		exit when
+-- 			_rec_count = 6 or 
+-- 			_end_flag = true
+-- 		;
+-- 		loop
+-- 		exit when array_length(_not_visit)=_not_visit_index
+-- 			-- pop the first element in the array 
+-- 			_next := _not_visit[_not_visit_index];
+-- 			_not_visit_index := _not_visit_index + 1;
+
+-- 			for _this_con in 
+-- 				select * from actor_path 
+-- 				where 
+-- 					src_id = _next 
+-- 			loop
+-- 				if ARRAY[_this_con.dest_id] <@ _seen_actor then 
+-- 					raise notice 'Seen: %', _this_con.dest_id;
+-- 				elsif _this_con.dest_id = _dest then 
+-- 					raise notice 'Found: %', _dest;
+-- 					_end_flag:= true;
+-- 				else 
+-- 					--  add this actor as seen
+-- 					_seen_actor := _seen_actor || _this_con.dest_id;
+-- 					-- add this actor as next actor to visit 
+-- 					_not_visit := _not_visit || _this_con.dest_id;
+-- 				end if;
+-- 			end loop;
+-- 		end loop 
+
+
+-- 		-- add up the counter 
+-- 		_rec_count := _rec_count +1 ;
+-- 	end loop;
+-- end;
+-- $$ language plpgsql;
+
 --  Add your code below
---
+
