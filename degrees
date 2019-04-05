@@ -66,6 +66,9 @@ $searching = array();
 // init the 
 array_push($searching, array($src));
 
+$seen[$src] = 1;
+
+
 // depth 1 example 1598 - 2591
 // depth 2 example 1598 - 3926
 // multiple path example 
@@ -99,7 +102,7 @@ while(
   }
 }
 
-$seen[$src] = null;
+unset($seen[$src]);
 
 /**
  * Translate the seen to degree => array(name)
@@ -127,8 +130,5 @@ for ($depth=$start_depth; $depth <= $end_depth; $depth++) {
     $i++;
   }
 }
-
-
-
 
 ?>
