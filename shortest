@@ -55,7 +55,8 @@ $success_path_arr = array();
 // init the 
 array_push($searching, array($src));
 
-
+// depth of source is 1
+$seen[$src] = 1;
 
 // depth 1 example 1598 - 2591
 // depth 2 example 1598 - 3926
