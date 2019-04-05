@@ -70,7 +70,7 @@ create type movie_path as
 	(src text, movie text, y int , dest text);
 
 create or replace function actor_path_to_strings
-	(_src int, _dest int) returns movie_path 
+	(_src int, _dest int) returns setof movie_path 
 as $$ 
 	select a1.name, m.title , m.year, a2.name 
 	from actor_path as ap 

@@ -73,7 +73,30 @@ function get_movie_path($array){
 
     // return the result 
     return $res;
-    
+}
+
+
+function get_combinations($tree, $x){
+    if (empty($tree[$x])){
+        return null;
+    }
+
+    $path = array();
+
+    foreach ($tree[$x] as $el) {
+        $child_set = get_combinations($tree, $x+1);
+        if(empty($child_set)){
+            // create the bottom level of array 
+            array_push($path, array($el));
+            continue;
+        }
+        foreach($child_set as $child){
+            // combine the parent and chiledren 
+            array_unshift($child , $el);
+            array_push($path, $child);
+        }
+    }
+    return $path;
 
 }
 

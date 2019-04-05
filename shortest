@@ -39,7 +39,7 @@ $searching = array();
 // the end depth is given by specification 
 $end_depth = 6;
 // successful path to the dest 
-$success_path = array();
+$success_path_arr = array();
 
 // this will be delete, only for testing
 $src = (int) $src;
@@ -53,6 +53,8 @@ array_push($searching, array($src));
 
 // depth 1 example 1598 - 2591
 // depth 2 example 1598 - 3926
+// multiple path example 
+// 539 - 66
 while(
   ($next = array_shift($searching)) &&
   sizeof($next) < $end_depth
@@ -82,7 +84,7 @@ while(
         // stop the path search earlier 
         $end_depth=sizeof($new_path) ;
         // push this path to be success ful path to dest 
-        array_push($success_path, $new_path);
+        array_push($success_path_arr, $new_path);
       }
     }
   }
@@ -92,9 +94,40 @@ while(
  * Translate the actor path to movie name's path
  */
 $movie_path = array();
-get_movie_path([1598,1631]);
-get_movie_path([1598,1631]);
-dd(get_movie_path([1598,1631]));
+
+// fetch the depth 
+$depth = $end_depth;
+// dd($success_path_arr);
+
+
+foreach ($success_path_arr as $success_path) {
+  for ($start_index=0; $start_index < $depth -1; $start_index++) { 
+    // replace the index node with movie path info 
+    $success_path[$start_index] = 
+      get_movie_path(
+        array_slice($success_path, $start_index, 2)
+      );
+  }
+  // remove the last element, which is the dest_id 
+  // while other is all movie path 
+  array_pop($success_path);
+  // dd($success_path);
+
+
+  // push this processed into movie path 
+  foreach (get_combinations($success_path,0) as $mp) {
+    array_push(
+      $movie_path, $mp
+    );
+  }
+}
+
+
+$i =1;
+foreach ($movie_path as $mp) {
+  echo "$i. ".join($mp, "; ")."\n";
+  $i++;
+}
 
 
 
