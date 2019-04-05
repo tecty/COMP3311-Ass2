@@ -18,42 +18,65 @@ $db = dbConnect(DB_CONNECTION);
 
 $src  = $argv[1];
 $dest = $argv[2];
-
-$path = array();
-
+// initial the edges array
+$edges  = array();
 
 $q ="select distinct src_id, dest_id from actor_path ;";
 $r = dbQuery($db, $q);
-$i =1 ;
 while ($t = dbNext($r)){
-  echo "$i. $t[0] - $t[1]\n";
-  $path[$t[0]][$t[1]] = true;
-  $i++;
+  // 2-d array with index is int 
+  $edges[(int)$t[0]][(int)$t[1]] = true;
 }
 
-  if (!empty($path[$t[0]][$t[1]])){
-    echo "true";
-  }
-  else{
-    echo "false";
-  }
 
-// dd( mkSQL($q, $arr));
+/**
+ * Use BFS to search the path to dest spcified 
+ */
 
-// Iterate through the results and print
-// $i = 1;
-// while ($t = dbNext($r)) {
-//   echo "$i. $t[0]";
-//   // if (!empty($t[1])){
-//   //   echo " (".$t[1].")";
-//   // }
-//   // echo " [";
-//   // noEmptyEcho($t[2],", ");
-//   // noEmptyEcho($t[3],", ");
-//   // noEmptyEcho($t[4],", ");
-//   // noEmptyEcho($t[5]);
-//   echo "\n";
-//   $i++;
-// }
+$seen = array();
+// path is array of array(path obj?)
+$path = array();
+
+// this will be delete, only for testing
+$src = (int) $src;
+$dest = (int) $dest;
+
+array_push($path, array($src));
+
+// the end depth is given by specification 
+$end_depth = 6;
+
+while(
+  ($next = array_shift($path)) &&
+  sizeof($next) < $end_depth
+){
+  foreach ($edges[array_last($next)] as $neighbour => $value) {
+    // we only use the keys in the array 
+    // the key is the neighbour for the last node in next 
+    if (empty($seen[$neighbour])) {
+      // not seen
+      // push a new route to search 
+
+      // copy the whole array by assign 
+      $new_path = $next; 
+      array_push($new_path, $neighbour);
+      
+      array_push($path, $new_path);
+    } else {
+      // seen, dump this node 
+    }
+    
+    if($neighbour == $dest){
+      // stop the path search earlier 
+      $end_depth(sizeof($next) + 1);
+    }
+
+  }
+  dd($path);    
+}
+
+
+
+
 
 ?>

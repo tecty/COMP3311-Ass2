@@ -35,4 +35,9 @@ function ifExistReturn($val, $str= ""){
     return "";
 }  
 
+
+function array_last($array){
+    return $array[sizeof($array) -1];
+}
+
 ?>
