@@ -105,10 +105,10 @@ while ($t = dbNext($r)) {
     echo " (".$t[1].")";
   }
   echo " [";
-  noEmptyEcho($t[2],", ");
-  noEmptyEcho($t[3],", ");
-  noEmptyEcho($t[4],", ");
-  noEmptyEcho($t[5]);
+  echo($t[2].", ");
+  echo($t[3].", ");
+  echo($t[4].", ");
+  echo($t[5]);
   echo "]\n";
   $i++;
 }
