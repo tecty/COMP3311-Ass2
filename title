@@ -15,7 +15,7 @@ if (count($argv) < 2) exit("$usage\n");
 // Get the return results
 $val = "%".$argv[1]."%";
 $q = "
-select m.title, m.year, m.content_rating, r.imdb_score, namelist(g.genre)
+select m.title, m.year, m.content_rating, r.imdb_score, string_agg(g.genre,',' order by g.genre)
 from movie as m
 join rating as r 
     on r.movie_id = m.id

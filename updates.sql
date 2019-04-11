@@ -27,27 +27,34 @@ UPDATE movie SET title = TRIM (title);
 
 
 -- connect the name list by ','
-create or replace function removefirst(_str text) returns text 
-as $$
-begin
-	return substr(_str, 2,length(_str)-1);
-end;
-$$ language plpgsql;
+-- create or replace function removefirst(_str text) returns text 
+-- as $$
+-- begin
+-- 	return substr(_str, 2,length(_str)-1);
+-- end;
+-- $$ language plpgsql;
 
-create or replace function namePuls(_list text, _name text) returns text 
-as $$
-begin
-	_list := _list || ','||_name;
-	return _list;
-end;
-$$ language plpgsql;
+-- create or replace function namePuls(_list text, _name text) returns text 
+-- as $$
+-- begin
+-- 	_list := _list || ','||_name;
+-- 	return _list;
+-- end;
+-- $$ language plpgsql;
 
-create aggregate namelist(text)(
-	stype = text,
-	initcond = '',
-	sfunc = namePuls,
-	finalfunc  = removefirst
-);
+-- create or replace function nameSort( _a text, _b text) returns int 
+-- as $$
+-- 	return _a > _b ;
+-- $$ language plpgsql;
+
+
+-- create aggregate namelist(text)(
+-- 	stype = text,
+-- 	initcond = '',
+-- 	sfunc = namePuls,
+-- 	finalfunc  = removefirst,
+-- 	sortop = nameSort
+-- );
 
 
 create view actor_path 
