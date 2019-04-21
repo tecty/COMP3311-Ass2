@@ -64,7 +64,7 @@ $seen[$src] = 1;
 // 539 - 66
 while(
   ($next = array_shift($searching)) &&
-  sizeof($next) < $end_depth
+  sizeof($next) <= $end_depth
 ){
   foreach ($edges[array_last($next)] as $neighbour => $value) {
     // we only use the keys in the array 
