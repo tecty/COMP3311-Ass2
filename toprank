@@ -46,8 +46,8 @@ if ($argc == 5){
 $limit = array_shift($argv);
 $start_year = array_shift($argv);
 $end_year = array_shift($argv);
-
-$arr= [$start_year, $end_year, $limit];
+// dd($arr);
+$arr= array($start_year, $end_year, $limit);
 // dd($arr);
 
 // Get the return results

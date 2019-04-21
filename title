@@ -23,7 +23,7 @@ join genre as g
     on g.movie_id= m.id
 where lower(title) like %s 
 group by m.title, m.year, m.content_rating, r.imdb_score
-order by m.year
+order by m.year, r.imdb_score desc, m.title
 ;
 ";
 $r = dbQuery($db, mkSQL($q, $val));
