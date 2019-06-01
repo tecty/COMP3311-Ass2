@@ -1,7 +1,11 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 # use this at school
 # psql $@
 
 # at localhost by docker 
 psql 'dbname=mydb host=localhost user=postgres password=apple123' $@
+=======
+psql 'dbname=a2' $@
+>>>>>>> c6e96d9ddc5958161486cade7db48cbbf1dc87b0
